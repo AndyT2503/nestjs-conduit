@@ -1,16 +1,20 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
+import { BaseEntity } from '../common';
+import { DatabaseSchema } from '../const';
+import { Article, Follow, Comment, Favorite } from './';
 
 @Entity({
-  schema: 'user'
+  schema: DatabaseSchema.user,
 })
-export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @Column()
+export class User extends BaseEntity {
+  @Column({
+    unique: true,
+  })
   email: string;
 
-  @Column()
+  @Column({
+    unique: true,
+  })
   username: string;
 
   @Column()
@@ -21,4 +25,19 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Follow, (follow) => follow.follower)
+  followers: Follow[];
+
+  @OneToMany(() => Follow, (follow) => follow.following)
+  followings: Follow[];
+
+  @OneToMany(() => Article, (article) => article.author)
+  articles: Article[];
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments: Comment[];
+
+  @OneToMany(() => Favorite, (favorite) => favorite.author)
+  favorites: Favorite[];
 }
