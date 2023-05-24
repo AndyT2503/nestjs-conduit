@@ -9,6 +9,7 @@ export class GenerateUserTable1684685527254 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropSchema('user', true);
         await queryRunner.query(`DROP TABLE "user"."user"`);
     }
 

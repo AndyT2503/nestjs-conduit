@@ -13,7 +13,7 @@ export class Article extends BaseEntity {
   @Column()
   body: string;
 
-  @Column()
+  @Column('text', { array: true })
   tags: string[];
 
   @ManyToOne(() => User, (user) => user.articles)
