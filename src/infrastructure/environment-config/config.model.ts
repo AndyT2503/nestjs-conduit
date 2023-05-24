@@ -1,6 +1,7 @@
 export interface EnvironmentConfiguration {
   database: DatabaseConfiguration;
   listeningPort: number;
+  jwtSecret: string;
 }
 
 interface DatabaseConfiguration {

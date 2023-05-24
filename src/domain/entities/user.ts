@@ -7,6 +7,7 @@ import { Article, Follow, Comment, Favorite } from './';
   schema: DatabaseSchema.user,
 })
 export class User extends BaseEntity {
+  
   @Column({
     unique: true,
   })
@@ -17,10 +18,14 @@ export class User extends BaseEntity {
   })
   username: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   bio: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   image: string;
 
   @Column()

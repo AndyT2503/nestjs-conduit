@@ -9,4 +9,5 @@ export const environmentConfiguration = (): EnvironmentConfiguration => ({
     port: +process.env.DATABASE_PORT,
   },
   listeningPort: +process.env.LISTENING_PORT,
+  jwtSecret: process.env.JWT_SECRET,
 });
