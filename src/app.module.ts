@@ -4,10 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { environmentConfiguration } from './infrastructure/environment-config';
 import { typeOrmConfigOptions } from './infrastructure/type-orm-config';
 import { UserModule } from './api/controllers/user';
+import { AuthModule } from './infrastructure/auth';
 
 @Module({
   imports: [
     UserModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [environmentConfiguration],

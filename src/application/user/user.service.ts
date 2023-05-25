@@ -1,16 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { HttpException, HttpStatus, Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/domain/entities';
+import { AuthService } from 'src/infrastructure/auth';
 import { Repository } from 'typeorm';
 import { RegisterUserDto } from './dto';
 import { UserDto } from './dto/user-dto';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST
+})
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    private jwtService: JwtService,
+    private authService: AuthService,
   ) {}
 
   async registerUser(request: RegisterUserDto): Promise<UserDto> {
@@ -28,11 +30,7 @@ export class UserService {
       ...request,
     });
 
-    const accessToken = await this.jwtService.signAsync({
-      userId: newUser.id,
-      username: newUser.username,
-      email: newUser.email,
-    });
+    const accessToken = await this.authService.generateAccessToken(newUser);
     return {
       bio: newUser.bio,
       email: newUser.email,
