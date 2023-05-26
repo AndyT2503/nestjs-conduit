@@ -9,7 +9,6 @@ import { User } from 'src/domain/entities';
 import { AuthService } from 'src/infrastructure/auth';
 import { Repository } from 'typeorm';
 import { LoginUserDto, RegisterUserDto, UserDto } from './dto';
-import { Request } from 'express';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -32,14 +31,12 @@ export class UserService {
       ...request,
       password: await this.authService.hashPassword(request.password),
     });
-
-    const accessToken = await this.authService.generateAccessToken(newUser);
     return {
       bio: newUser.bio,
       email: newUser.email,
       image: newUser.image,
       username: newUser.username,
-      token: accessToken,
+      token: this.authService.getCurrentToken(),
     };
   }
 
@@ -72,7 +69,7 @@ export class UserService {
   }
 
   async getCurrentUserProfile(): Promise<UserDto> {
-    const userId = this.authService.currentUser!.userId;
+    const userId = this.authService.getCurrentUser().id;
     const user = await this.userRepository.findOne({
       where: [
         {

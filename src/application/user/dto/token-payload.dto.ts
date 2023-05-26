@@ -1,5 +1,5 @@
-export interface TokenPayload {
-  userId: string;
-  username: string;
-  email: string;
+import { User } from 'src/domain/entities';
+
+export interface TokenPayloadDto {
+  user: Pick<User, 'id' | 'username' | 'email'>;
 }
