@@ -6,9 +6,12 @@ import { AuthService } from './auth.service';
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService) {}
 
-  canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): Promise<boolean> | boolean {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+    if (!token) {
+      return false;
+    }
     return this.authService.validateToken(token);
   }
 
