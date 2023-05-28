@@ -5,10 +5,12 @@ import { environmentConfiguration } from './infrastructure/environment-config';
 import { typeOrmConfigOptions } from './infrastructure/type-orm-config';
 import { UserModule } from './api/controllers/user';
 import { AuthMiddleware, AuthModule } from './infrastructure/auth';
+import { ProfileModule } from './api/controllers/profile';
 
 @Module({
   imports: [
     UserModule,
+    ProfileModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
