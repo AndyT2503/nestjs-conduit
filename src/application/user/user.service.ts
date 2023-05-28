@@ -27,7 +27,6 @@ export class UserService {
       throw new BadRequestException(['Username and email must be unique']);
     }
     const newUser = await this.userRepository.save({
-      ...new User(),
       ...request,
       password: await this.authService.hashPassword(request.password),
     });
