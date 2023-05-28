@@ -12,24 +12,22 @@ import { TokenPayloadDto } from 'src/application/user';
 })
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  private currentUser: Pick<User, 'id' | 'username' | 'email'>;
-  private currentToken: string;
+  private currentUser: Pick<User, 'id' | 'username' | 'email'> | null;
+  private currentToken: string | null;
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService<EnvironmentConfiguration>,
   ) {}
 
-  getCurrentUser(): Pick<User, 'id' | 'username' | 'email'> {
+  getCurrentUser(): Pick<User, 'id' | 'username' | 'email'> | null {
     return this.currentUser;
   }
 
-  getCurrentToken(): string {
+  getCurrentToken(): string | null {
     return this.currentToken;
   }
 
-  async generateAccessToken(
-    user: User,
-  ): Promise<string> {
+  async generateAccessToken(user: User): Promise<string> {
     const accessToken = await this.jwtService.signAsync({
       user: {
         id: user.id,
@@ -42,13 +40,9 @@ export class AuthService {
 
   async validateToken(token: string): Promise<boolean> {
     try {
-      const payload = await this.jwtService.verifyAsync<TokenPayloadDto>(
-        token,
-        {
-          secret: this.configService.get('jwtSecret'),
-        },
-      );
-      this.updateCurrentUserInfo(payload.user, token);
+      await this.jwtService.verifyAsync<TokenPayloadDto>(token, {
+        secret: this.configService.get('jwtSecret'),
+      });
       return true;
     } catch (error) {
       this.logger.error(error);
@@ -56,12 +50,26 @@ export class AuthService {
     }
   }
 
-  private updateCurrentUserInfo(
-    user: Pick<User, 'id' | 'username' | 'email'>,
-    token: string,
-  ): void {
-    this.currentUser = user;
-    this.currentToken = token;
+  async getCurrentUserInfo(token: string | undefined): Promise<void> {
+    if (!token) {
+      this.currentUser = null;
+      this.currentToken = null;
+      return;
+    }
+    try {
+      const payload = await this.jwtService.verifyAsync<TokenPayloadDto>(
+        token,
+        {
+          secret: this.configService.get('jwtSecret'),
+        },
+      );
+      this.currentUser = payload.user;
+      this.currentToken = token;
+    } catch (error) {
+      this.logger.error(error);
+      this.currentUser = null;
+      this.currentToken = null;
+    }
   }
 
   async hashPassword(password: string): Promise<string> {

@@ -31,12 +31,13 @@ export class UserService {
       ...request,
       password: await this.authService.hashPassword(request.password),
     });
+
     return {
       bio: newUser.bio,
       email: newUser.email,
       image: newUser.image,
       username: newUser.username,
-      token: this.authService.getCurrentToken(),
+      token: await this.authService.generateAccessToken(newUser),
     };
   }
 
@@ -69,7 +70,7 @@ export class UserService {
   }
 
   async getCurrentUserProfile(): Promise<UserDto> {
-    const userId = this.authService.getCurrentUser().id;
+    const userId = this.authService.getCurrentUser()!.id;
     const user = await this.userRepository.findOne({
       where: [
         {
