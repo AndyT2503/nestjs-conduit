@@ -1,4 +1,4 @@
-import { Logger, Scope } from '@nestjs/common';
+import { Logger, Scope, UnauthorizedException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -46,7 +46,7 @@ export class AuthService {
       return true;
     } catch (error) {
       this.logger.error(error);
-      return false;
+      throw new UnauthorizedException(['Unauthorized']);
     }
   }
 

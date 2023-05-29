@@ -8,8 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Follow, User } from 'src/domain/entities';
 import { AuthService } from 'src/infrastructure/auth';
 import { Repository } from 'typeorm';
-import { FollowProfileDto } from './dto';
-import { ProfileDto } from './dto/profile.dto';
+import { ProfileDto } from './dto';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -44,7 +43,7 @@ export class ProfileService {
     };
   }
 
-  async followProfile(request: FollowProfileDto): Promise<ProfileDto> {
+  async followProfile(followerUsername: string): Promise<ProfileDto> {
     const followingUsername = this.authService.getCurrentUser()?.username;
     const followingUser = await this.userRepository.findOne({
       where: { username: followingUsername },
@@ -53,10 +52,10 @@ export class ProfileService {
       throw new UnauthorizedException(['Unauthenticated user']);
     }
     const followerUser = await this.userRepository.findOne({
-      where: { username: request.username },
+      where: { username: followerUsername },
     });
     if (!followerUser) {
-      throw new NotFoundException([`User ${request.username} does not exist`]);
+      throw new NotFoundException([`User ${followerUsername} does not exist`]);
     }
 
     await this.followRepository.save({
@@ -66,6 +65,37 @@ export class ProfileService {
     return {
       bio: followerUser.bio,
       following: true,
+      image: followerUser.image,
+      username: followerUser.username,
+    };
+  }
+
+  async unFollowProfile(followerUsername: string): Promise<ProfileDto> {
+    const followingUsername = this.authService.getCurrentUser()?.username;
+    const followingUser = await this.userRepository.findOne({
+      where: { username: followingUsername },
+    });
+    if (!followingUser) {
+      throw new UnauthorizedException(['Unauthenticated user']);
+    }
+    const followerUser = await this.userRepository.findOne({
+      where: { username: followerUsername },
+    });
+    if (!followerUser) {
+      throw new NotFoundException([`User ${followerUsername} does not exist`]);
+    }
+
+    await this.followRepository.delete({
+      follower: {
+        id: followerUser.id,
+      },
+      following: {
+        id: followingUser.id,
+      },
+    });
+    return {
+      bio: followerUser.bio,
+      following: false,
       image: followerUser.image,
       username: followerUser.username,
     };
