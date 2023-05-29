@@ -30,6 +30,9 @@ export class UserController {
     return await this.userService.login(user);
   }
 
+  @ApiOkResponse({
+    type: UserDto,
+  })
   @UseGuards(AuthGuard)
   @Get()
   async getCurrentUserProfile(): Promise<UserDto> {

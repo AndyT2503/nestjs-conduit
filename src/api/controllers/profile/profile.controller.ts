@@ -1,6 +1,11 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
-import { ProfileDto, ProfileService } from 'src/application/profile';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  FollowProfileDto,
+  ProfileDto,
+  ProfileService,
+} from 'src/application/profile';
+import { AuthGuard } from 'src/infrastructure/auth';
 
 @ApiTags('profile')
 @Controller({
@@ -15,5 +20,14 @@ export class ProfileController {
   @Get(':username')
   async getProfile(@Param('username') username: string): Promise<ProfileDto> {
     return await this.profileService.getProfile(username);
+  }
+
+  @ApiOkResponse({
+    type: ProfileDto,
+  })
+  @UseGuards(AuthGuard)
+  @Post('follow')
+  async followUser(@Body() request: FollowProfileDto): Promise<ProfileDto> {
+    return await this.profileService.followProfile(request);
   }
 }
