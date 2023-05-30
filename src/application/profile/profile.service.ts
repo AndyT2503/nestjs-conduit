@@ -44,13 +44,6 @@ export class ProfileService {
   }
 
   async followProfile(followerUsername: string): Promise<ProfileDto> {
-    const followingUsername = this.authService.getCurrentUser()?.username;
-    const followingUser = await this.userRepository.findOne({
-      where: { username: followingUsername },
-    });
-    if (!followingUser) {
-      throw new UnauthorizedException(['Unauthenticated user']);
-    }
     const followerUser = await this.userRepository.findOne({
       where: { username: followerUsername },
     });
@@ -60,7 +53,9 @@ export class ProfileService {
 
     await this.followRepository.save({
       follower: followerUser,
-      following: followingUser,
+      following: {
+        id: this.authService.getCurrentUser()!.id,
+      },
     });
     return {
       bio: followerUser.bio,
@@ -71,13 +66,6 @@ export class ProfileService {
   }
 
   async unFollowProfile(followerUsername: string): Promise<ProfileDto> {
-    const followingUsername = this.authService.getCurrentUser()?.username;
-    const followingUser = await this.userRepository.findOne({
-      where: { username: followingUsername },
-    });
-    if (!followingUser) {
-      throw new UnauthorizedException(['Unauthenticated user']);
-    }
     const followerUser = await this.userRepository.findOne({
       where: { username: followerUsername },
     });
@@ -90,7 +78,7 @@ export class ProfileService {
         id: followerUser.id,
       },
       following: {
-        id: followingUser.id,
+        id: this.authService.getCurrentUser()!.id,
       },
     });
     return {
