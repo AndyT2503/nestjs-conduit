@@ -11,12 +11,13 @@ import { AuthService } from './auth.service';
 export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService) {}
 
-  canActivate(context: ExecutionContext): Promise<boolean> | boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = Utils.extractTokenFromRequest(request);
-    if (!token) {
-      throw new UnauthorizedException();
+    const isValidToken = await this.authService.validateToken(token);
+    if (isValidToken) {
+      return true;
     }
-    return this.authService.validateToken(token);
+    throw new UnauthorizedException(['Unauthorized']);
   }
 }

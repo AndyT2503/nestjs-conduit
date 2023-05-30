@@ -1,8 +1,8 @@
 import { Request } from 'express';
 
 export class Utils {
-  static extractTokenFromRequest(request: Request): string | undefined {
+  static extractTokenFromRequest(request: Request): string {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    return type === 'Bearer' ? token : '';
   }
 }

@@ -46,7 +46,7 @@ export class AuthService {
       return true;
     } catch (error) {
       this.logger.error(error);
-      throw new UnauthorizedException(['Unauthorized']);
+      return false;
     }
   }
 
