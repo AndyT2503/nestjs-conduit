@@ -1,12 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   LoginUserDto,
   RegisterUserDto,
-  UserService,
+  UpdateUserDto, UserDto, UserService
 } from 'src/application/user';
 import { AuthGuard } from 'src/infrastructure/auth';
-import { UserDto } from '../../../application/user/dto/user.dto';
 @ApiTags('user')
 @Controller({
   path: 'user',
@@ -37,5 +36,16 @@ export class UserController {
   @Get()
   async getCurrentUserProfile(): Promise<UserDto> {
     return await this.userService.getCurrentUserProfile();
+  }
+
+  @ApiOkResponse({
+    type: UserDto,
+  })
+  @UseGuards(AuthGuard)
+  @Put()
+  async updateCurrentUserProfile(
+    @Body() request: UpdateUserDto,
+  ): Promise<UserDto> {
+    return await this.userService.updateUser(request);
   }
 }

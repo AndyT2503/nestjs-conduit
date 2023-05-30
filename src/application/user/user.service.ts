@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/domain/entities';
 import { AuthService } from 'src/infrastructure/auth';
 import { Repository } from 'typeorm';
-import { LoginUserDto, RegisterUserDto, UserDto } from './dto';
+import { LoginUserDto, RegisterUserDto, UpdateUserDto, UserDto } from './dto';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -49,7 +49,7 @@ export class UserService {
       ],
     });
     if (!user) {
-      throw new UnauthorizedException(['User email does not exist']);
+      throw new UnauthorizedException(['Email is invalid']);
     }
     const isValidPassword = await this.authService.validatePassword(
       request.password,
@@ -78,15 +78,43 @@ export class UserService {
       ],
     });
     if (!user) {
-      throw new UnauthorizedException(['User email does not exist']);
+      throw new UnauthorizedException(['User does not exist']);
     }
-    const accessToken = await this.authService.generateAccessToken(user);
     return {
       bio: user.bio,
       email: user.email,
       image: user.image,
       username: user.username,
-      token: accessToken,
+      token: this.authService.getCurrentToken()!,
+    };
+  }
+
+  async updateUser(request: UpdateUserDto): Promise<UserDto> {
+    const userId = this.authService.getCurrentUser()!.id;
+    const user = await this.userRepository.findOne({
+      where: [
+        {
+          id: userId,
+        },
+      ],
+    });
+    if (!user) {
+      throw new UnauthorizedException(['User does not exist']);
+    }
+    user.bio = request.bio;
+    user.image = request.image;
+    user.email = request.email || user.email;
+    user.username = request.username || user.username;
+    user.password = request.password
+      ? await this.authService.hashPassword(request.password)
+      : user.password;
+    const updateUser = await this.userRepository.save(user);
+    return {
+      bio: user.bio,
+      email: user.email,
+      image: user.image,
+      username: user.username,
+      token: await this.authService.generateAccessToken(updateUser),
     };
   }
 }
