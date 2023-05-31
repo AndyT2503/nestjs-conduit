@@ -40,7 +40,6 @@ module.exports = {
       },
     ],
     'typescript-eslint/quotes': 'off',
-    'no-underscore-dangle': ['error'],
     radix: 'off',
   },
 };

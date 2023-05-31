@@ -4,10 +4,8 @@ import {
   Scope,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/domain/entities';
 import { AuthService } from 'src/infrastructure/auth';
-import { Repository } from 'typeorm';
+import { UserRepository } from 'src/infrastructure/repositories/user';
 import { LoginUserDto, RegisterUserDto, UpdateUserDto, UserDto } from './dto';
 
 @Injectable({
@@ -15,7 +13,7 @@ import { LoginUserDto, RegisterUserDto, UpdateUserDto, UserDto } from './dto';
 })
 export class UserService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    private userRepository: UserRepository,
     private authService: AuthService,
   ) {}
 

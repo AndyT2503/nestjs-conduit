@@ -1,13 +1,7 @@
-import {
-  Injectable,
-  NotFoundException,
-  Scope,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Follow, User } from 'src/domain/entities';
+import { Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { AuthService } from 'src/infrastructure/auth';
-import { Repository } from 'typeorm';
+import { FollowRepository } from 'src/infrastructure/repositories/follow';
+import { UserRepository } from 'src/infrastructure/repositories/user';
 import { ProfileDto } from './dto';
 
 @Injectable({
@@ -15,8 +9,8 @@ import { ProfileDto } from './dto';
 })
 export class ProfileService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(Follow) private followRepository: Repository<Follow>,
+    private userRepository: UserRepository,
+    private followRepository: FollowRepository,
     private authService: AuthService,
   ) {}
 
