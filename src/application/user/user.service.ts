@@ -1,11 +1,12 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   Scope,
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from 'src/domain/entities';
-import { AbstractRepository } from 'src/domain/repository';
+import { IRepository, RepositoryInjectionToken } from 'src/domain/repository';
 import { AuthService } from 'src/infrastructure/auth';
 import { LoginUserDto, RegisterUserDto, UpdateUserDto, UserDto } from './dto';
 
@@ -14,7 +15,7 @@ import { LoginUserDto, RegisterUserDto, UpdateUserDto, UserDto } from './dto';
 })
 export class UserService {
   constructor(
-    private userRepository: AbstractRepository<User>,
+    @Inject(RepositoryInjectionToken.User) private userRepository: IRepository<User>,
     private authService: AuthService,
   ) {}
 

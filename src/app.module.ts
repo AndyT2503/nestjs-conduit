@@ -1,16 +1,18 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { environmentConfiguration } from './infrastructure/environment-config';
-import { typeOrmConfigOptions } from './infrastructure/type-orm-config';
+import { ArticleModule } from './api/controllers/article';
+import { ProfileModule } from './api/controllers/profile';
 import { UserModule } from './api/controllers/user';
 import { AuthMiddleware, AuthModule } from './infrastructure/auth';
-import { ProfileModule } from './api/controllers/profile';
+import { environmentConfiguration } from './infrastructure/environment-config';
+import { typeOrmConfigOptions } from './infrastructure/type-orm-config';
 
 @Module({
   imports: [
     UserModule,
     ProfileModule,
+    ArticleModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,

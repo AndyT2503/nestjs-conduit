@@ -1,12 +1,17 @@
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../common';
 import { DatabaseSchema } from '../const';
-import { User, Comment, Favorite } from './';
+import { Comment, Favorite, User } from './';
 
 @Entity({
   schema: DatabaseSchema.Article,
 })
 export class Article extends BaseEntity {
+  @Column({
+    unique: true,
+  })
+  title: string;
+
   @Column()
   description: string;
 
@@ -24,4 +29,9 @@ export class Article extends BaseEntity {
 
   @OneToMany(() => Favorite, (favorite) => favorite.article)
   favorites: Favorite[];
+
+  @Column({
+    unique: true,
+  })
+  slug: string;
 }
