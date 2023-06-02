@@ -2,11 +2,11 @@ import {
   BadRequestException,
   Injectable,
   Scope,
-  UnauthorizedException
+  UnauthorizedException,
 } from '@nestjs/common';
 import { User } from 'src/domain/entities';
+import { AbstractRepository } from 'src/domain/repository';
 import { AuthService } from 'src/infrastructure/auth';
-import { AbstractRepository } from 'src/infrastructure/repositories/common';
 import { LoginUserDto, RegisterUserDto, UpdateUserDto, UserDto } from './dto';
 
 @Injectable({

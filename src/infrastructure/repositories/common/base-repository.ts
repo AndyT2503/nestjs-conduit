@@ -1,3 +1,4 @@
+import { AbstractRepository } from 'src/domain/repository';
 import {
   DeepPartial,
   DeleteResult,
@@ -9,7 +10,6 @@ import {
   Repository,
   SaveOptions,
 } from 'typeorm';
-import { AbstractRepository } from './abstract-repository';
 
 export class BaseRepository<Entity extends ObjectLiteral>
   implements AbstractRepository<Entity>

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { Follow, User } from 'src/domain/entities';
+import { AbstractRepository } from 'src/domain/repository';
 import { AuthService } from 'src/infrastructure/auth';
-import { AbstractRepository } from 'src/infrastructure/repositories/common';
 import { ProfileDto } from './dto';
 
 @Injectable({

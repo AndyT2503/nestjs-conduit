@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Favorite } from 'src/domain/entities';
-import { AbstractRepository } from '../common';
+import { AbstractRepository } from 'src/domain/repository';
 import { FavoriteRepository } from './favorite-repository';
 
 @Module({

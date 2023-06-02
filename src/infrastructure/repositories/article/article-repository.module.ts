@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Article } from 'src/domain/entities';
-import { AbstractRepository } from '../common';
+import { AbstractRepository } from 'src/domain/repository';
 import { ArticleRepository } from './article-repository';
 
 @Module({
