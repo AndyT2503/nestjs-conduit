@@ -4,8 +4,8 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Utils } from '../utils';
 import { AuthService } from './auth.service';
+import { extractTokenFromRequest } from '../utils';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = Utils.extractTokenFromRequest(request);
+    const token = extractTokenFromRequest(request);
     const isValidToken = await this.authService.validateToken(token);
     if (isValidToken) {
       return true;
