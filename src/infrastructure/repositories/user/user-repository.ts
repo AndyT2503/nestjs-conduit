@@ -1,5 +1,5 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { IRepository } from '../common/repository.interface';
+import { AbstractRepository } from '../common';
 import { User } from 'src/domain/entities';
 import {
   FindOneOptions,
@@ -9,7 +9,7 @@ import {
   Repository,
 } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseRepository } from '../common/base-repository';
+import { BaseRepository } from '../common';
 
 @Injectable({
   scope: Scope.REQUEST,

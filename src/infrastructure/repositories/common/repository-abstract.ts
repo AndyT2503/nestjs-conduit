@@ -8,14 +8,14 @@ import {
   SaveOptions,
 } from 'typeorm';
 
-export interface IRepository<Entity> {
-  findOne(options: FindOneOptions<Entity>): Promise<Entity | null>;
-  find(options?: FindManyOptions<Entity>): Promise<Entity[]>;
-  save<T extends DeepPartial<Entity>>(
+export abstract class AbstractRepository<Entity> {
+  abstract findOne(options: FindOneOptions<Entity>): Promise<Entity | null>;
+  abstract find(options?: FindManyOptions<Entity>): Promise<Entity[]>;
+  abstract save<T extends DeepPartial<Entity>>(
     entity: T,
     options?: SaveOptions,
   ): Promise<T & Entity>;
-  delete(
+  abstract delete(
     criteria:
       | string
       | string[]

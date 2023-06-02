@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common/decorators';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Favorite } from 'src/domain/entities';
 import { Repository } from 'typeorm';
-import { BaseRepository } from '../common/base-repository';
+import { BaseRepository } from '../common';
 
 @Injectable({
   scope: Scope.REQUEST,

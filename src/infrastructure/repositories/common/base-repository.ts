@@ -9,10 +9,10 @@ import {
   Repository,
   SaveOptions,
 } from 'typeorm';
-import { IRepository } from './repository.interface';
+import { AbstractRepository } from './repository-abstract';
 
 export class BaseRepository<Entity extends ObjectLiteral>
-  implements IRepository<Entity>
+  implements AbstractRepository<Entity>
 {
   private _repository: Repository<Entity>;
   constructor(repository: Repository<Entity>) {

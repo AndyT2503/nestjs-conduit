@@ -2,7 +2,7 @@ import { Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from 'src/domain/entities';
 import { Repository } from 'typeorm';
-import { BaseRepository } from '../common/base-repository';
+import { BaseRepository } from '../common';
 
 @Injectable({
   scope: Scope.REQUEST,
