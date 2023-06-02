@@ -9,7 +9,7 @@ import {
   Repository,
   SaveOptions,
 } from 'typeorm';
-import { AbstractRepository } from './repository-abstract';
+import { AbstractRepository } from './abstract-repository';
 
 export class BaseRepository<Entity extends ObjectLiteral>
   implements AbstractRepository<Entity>
