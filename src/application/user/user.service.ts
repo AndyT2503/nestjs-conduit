@@ -98,7 +98,7 @@ export class UserService {
       ],
     });
     if (!user) {
-      throw new UnauthorizedException(['User does not exist']);
+      throw new UnauthorizedException(['Unauthorized']);
     }
     user.bio = request.bio;
     user.image = request.image;
