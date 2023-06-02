@@ -4,7 +4,7 @@ import { BaseEntity } from '../common';
 import { DatabaseSchema } from '../const';
 
 @Entity({
-  schema: DatabaseSchema.article,
+  schema: DatabaseSchema.Article,
 })
 export class Favorite extends BaseEntity {
   @ManyToOne(() => Article, (article) => article.favorites)

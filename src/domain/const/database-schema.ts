@@ -1,4 +1,4 @@
-export enum DatabaseSchema {
-  user = 'user',
-  article = 'article',
+export const enum DatabaseSchema {
+  User = 'user',
+  Article = 'article',
 }

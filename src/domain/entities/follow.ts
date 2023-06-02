@@ -4,7 +4,7 @@ import { DatabaseSchema } from '../const';
 import { User } from './';
 
 @Entity({
-  schema: DatabaseSchema.user,
+  schema: DatabaseSchema.User,
 })
 export class Follow extends BaseEntity {
   @ManyToOne(() => User, (user) => user.followers)

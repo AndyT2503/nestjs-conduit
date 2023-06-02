@@ -4,7 +4,7 @@ import { DatabaseSchema } from '../const';
 import { Article, User } from './';
 
 @Entity({
-  schema: DatabaseSchema.article,
+  schema: DatabaseSchema.Article,
 })
 export class Comment extends BaseEntity {
   @ManyToOne(() => User, (user) => user.comments)

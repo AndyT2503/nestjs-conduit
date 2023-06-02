@@ -4,7 +4,7 @@ import { DatabaseSchema } from '../const';
 import { User, Comment, Favorite } from './';
 
 @Entity({
-  schema: DatabaseSchema.article,
+  schema: DatabaseSchema.Article,
 })
 export class Article extends BaseEntity {
   @Column()
