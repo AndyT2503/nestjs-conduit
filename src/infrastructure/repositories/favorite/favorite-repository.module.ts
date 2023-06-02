@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Favorite } from 'src/domain/entities';
-import { AbstractRepository } from 'src/domain/repository';
+import { RepositoryInjectionToken } from 'src/domain/repository';
 import { FavoriteRepository } from './favorite-repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Favorite])],
   providers: [
     {
-      provide: AbstractRepository<Favorite>,
+      provide: RepositoryInjectionToken.Favorite,
       useClass: FavoriteRepository,
     },
   ],
-  exports: [AbstractRepository<Favorite>],
+  exports: [RepositoryInjectionToken.Favorite],
 })
 export class FavoriteRepositoryModule {}

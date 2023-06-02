@@ -1,14 +1,9 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { AbstractRepository } from '../common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/domain/entities';
 import {
-  FindOneOptions,
-  FindManyOptions,
-  DeepPartial,
-  SaveOptions,
-  Repository,
+  Repository
 } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { BaseRepository } from '../common';
 
 @Injectable({

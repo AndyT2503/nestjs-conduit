@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
-import { UserRepository } from './user-repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/domain/entities';
-import { AbstractRepository } from 'src/domain/repository';
+import { RepositoryInjectionToken } from 'src/domain/repository';
+import { UserRepository } from './user-repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
   providers: [
     {
-      provide: AbstractRepository<User>,
+      provide: RepositoryInjectionToken.User,
       useClass: UserRepository,
     },
   ],
-  exports: [AbstractRepository<User>],
+  exports: [RepositoryInjectionToken.User],
 })
 export class UserRepositoryModule {}

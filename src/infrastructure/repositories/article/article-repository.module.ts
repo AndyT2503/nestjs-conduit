@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Article } from 'src/domain/entities';
-import { AbstractRepository } from 'src/domain/repository';
+import { RepositoryInjectionToken } from 'src/domain/repository';
 import { ArticleRepository } from './article-repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Article])],
   providers: [
     {
-      provide: AbstractRepository<Article>,
+      provide: RepositoryInjectionToken.Article,
       useClass: ArticleRepository,
     },
   ],
-  exports: [AbstractRepository<Article>],
+  exports: [RepositoryInjectionToken.Article],
 })
 export class ArticleRepositoryModule {}

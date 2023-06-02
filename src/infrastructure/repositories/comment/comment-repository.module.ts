@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Comment } from 'src/domain/entities';
-import { AbstractRepository } from 'src/domain/repository';
+import { RepositoryInjectionToken } from 'src/domain/repository';
 import { CommentRepository } from './comment-repository';
+
 @Module({
   imports: [TypeOrmModule.forFeature([Comment])],
   providers: [
     {
-      provide: AbstractRepository<Comment>,
+      provide: RepositoryInjectionToken.Comment,
       useClass: CommentRepository,
     },
   ],
-  exports: [AbstractRepository<Comment>],
+  exports: [RepositoryInjectionToken.Comment],
 })
 export class CommentRepositoryModule {}
