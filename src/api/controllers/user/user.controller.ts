@@ -1,11 +1,13 @@
 import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   LoginUserDto,
   RegisterUserDto,
   UpdateUserDto, UserDto, UserService
 } from 'src/application/user';
 import { AuthGuard } from 'src/infrastructure/auth';
+
+@ApiBearerAuth()
 @ApiTags('user')
 @Controller({
   path: 'user',

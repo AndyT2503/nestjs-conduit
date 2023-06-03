@@ -6,10 +6,11 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProfileDto, ProfileService } from 'src/application/profile';
 import { AuthGuard } from 'src/infrastructure/auth';
 
+@ApiBearerAuth()
 @ApiTags('profile')
 @Controller({
   path: 'profile',

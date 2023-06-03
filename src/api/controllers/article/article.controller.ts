@@ -8,7 +8,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import {
   ArticleService,
   ArticleDto,
@@ -16,6 +16,7 @@ import {
 } from 'src/application/article';
 import { AuthGuard } from 'src/infrastructure/auth';
 
+@ApiBearerAuth()
 @ApiTags('article')
 @Controller({
   path: 'article',
@@ -32,6 +33,7 @@ export class ArticleController {
     return await this.articleService.createArticle(request);
   }
 
+  
   @ApiOkResponse({
     type: ArticleDto,
   })
