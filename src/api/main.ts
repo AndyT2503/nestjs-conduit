@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { EnvironmentConfiguration } from '../infrastructure/environment-config';
+import { TypeOrmErrorExceptionFilter } from 'src/infrastructure/exception';
 
 function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
@@ -17,8 +18,10 @@ function setupSwagger(app: INestApplication): void {
 }
 
 function setupAppConfiguration(app: INestApplication): void {
+  app.useGlobalFilters(new TypeOrmErrorExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api');
+  
 }
 
 async function bootstrap() {
