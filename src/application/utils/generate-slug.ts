@@ -1,4 +1,4 @@
 export function generateSlug(title: string): string {
-  const slug = title.split(' ').join('-');
+  const slug = title.toLowerCase().split(' ').join('-');
   return slug;
 }

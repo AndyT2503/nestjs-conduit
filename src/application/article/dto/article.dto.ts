@@ -9,6 +9,7 @@ export class ArticleDto {
   @ApiProperty() createdAt: Date;
   @ApiProperty() updatedAt: Date;
   @ApiProperty() favoritesCount: number;
+  @ApiProperty() favorited: boolean;
   @ApiProperty() author: ProfileDto;
   @ApiProperty() slug: string;
 }
