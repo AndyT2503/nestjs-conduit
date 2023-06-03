@@ -10,7 +10,6 @@ import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProfileDto, ProfileService } from 'src/application/profile';
 import { AuthGuard } from 'src/infrastructure/auth';
 
-@ApiBearerAuth()
 @ApiTags('profile')
 @Controller({
   path: 'profile',
@@ -26,6 +25,7 @@ export class ProfileController {
     return await this.profileService.getProfile(username);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     type: ProfileDto,
   })
@@ -35,6 +35,7 @@ export class ProfileController {
     return await this.profileService.followProfile(username);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     type: ProfileDto,
   })

@@ -7,7 +7,6 @@ import {
 } from 'src/application/user';
 import { AuthGuard } from 'src/infrastructure/auth';
 
-@ApiBearerAuth()
 @ApiTags('user')
 @Controller({
   path: 'user',
@@ -31,6 +30,7 @@ export class UserController {
     return await this.userService.login(user);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     type: UserDto,
   })
@@ -40,6 +40,7 @@ export class UserController {
     return await this.userService.getCurrentUserProfile();
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     type: UserDto,
   })

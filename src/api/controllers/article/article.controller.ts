@@ -16,7 +16,7 @@ import {
 } from 'src/application/article';
 import { AuthGuard } from 'src/infrastructure/auth';
 
-@ApiBearerAuth()
+
 @ApiTags('article')
 @Controller({
   path: 'article',
@@ -24,6 +24,7 @@ import { AuthGuard } from 'src/infrastructure/auth';
 export class ArticleController {
   constructor(private articleService: ArticleService) {}
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     type: ArticleDto,
   })
@@ -33,7 +34,7 @@ export class ArticleController {
     return await this.articleService.createArticle(request);
   }
 
-  
+  @ApiBearerAuth()
   @ApiOkResponse({
     type: ArticleDto,
   })
@@ -46,6 +47,7 @@ export class ArticleController {
     return await this.articleService.updateArticle(slug, request);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse()
   @UseGuards(AuthGuard)
   @Delete(':slug')
