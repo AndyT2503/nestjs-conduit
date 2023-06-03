@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { EnvironmentConfiguration } from '../infrastructure/environment-config';
-import { TypeOrmErrorExceptionFilter } from 'src/infrastructure/exception';
+import { TypeOrmErrorExceptionFilter } from 'src/infrastructure/exceptions';
 
 function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
