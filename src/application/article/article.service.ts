@@ -133,4 +133,43 @@ export class ArticleService {
       id: article.id,
     });
   }
+
+  //TODO: improve query performance
+  async getArticle(slug: string): Promise<ArticleDto> {
+    const article = await this.articleRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      relations: [
+        'favorites',
+        'favorites.author',
+        'author',
+        'author.followers.following',
+      ],
+    });
+    if (!article) {
+      throw new NotFoundException([`Article ${slug} does not exist`]);
+    }
+    return {
+      author: {
+        bio: article.author.bio,
+        following: article.author.followers.some(
+          (x) => x.following.id === this.authService.getCurrentUser()?.id,
+        ),
+        image: article.author.image,
+        username: article.author.username,
+      },
+      slug: article.slug,
+      body: article.body,
+      createdAt: article.createdAt,
+      description: article.description,
+      favoritesCount: article.favorites.length,
+      tagList: article.tags,
+      title: article.title,
+      updatedAt: article.updatedAt,
+      favorited: article.favorites.some(
+        (x) => x.author.id === this.authService.getCurrentUser()?.id,
+      ),
+    };
+  }
 }

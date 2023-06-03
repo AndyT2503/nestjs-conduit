@@ -1,4 +1,10 @@
-import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  Scope,
+} from '@nestjs/common';
 import { Follow, User } from 'src/domain/entities';
 import { IRepository, RepositoryInjectionToken } from 'src/domain/repository';
 import { AuthService } from 'src/infrastructure/auth';
@@ -9,8 +15,10 @@ import { ProfileDto } from './dto';
 })
 export class ProfileService {
   constructor(
-    @Inject(RepositoryInjectionToken.User) private userRepository: IRepository<User>,
-    @Inject(RepositoryInjectionToken.Follow) private followRepository: IRepository<Follow>,
+    @Inject(RepositoryInjectionToken.User)
+    private userRepository: IRepository<User>,
+    @Inject(RepositoryInjectionToken.Follow)
+    private followRepository: IRepository<Follow>,
     private authService: AuthService,
   ) {}
 
@@ -43,6 +51,9 @@ export class ProfileService {
     });
     if (!followerUser) {
       throw new NotFoundException([`User ${followerUsername} does not exist`]);
+    }
+    if (followerUser.id === this.authService.getCurrentUser()!.id) {
+      throw new BadRequestException(['Can not follow yourself']);
     }
 
     await this.followRepository.save({

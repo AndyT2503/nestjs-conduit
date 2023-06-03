@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import {
   ArticleService,
@@ -40,5 +49,13 @@ export class ArticleController {
   @Delete(':slug')
   async deleteArticle(@Param('slug') slug: string): Promise<void> {
     await this.articleService.deleteArticle(slug);
+  }
+
+  @ApiOkResponse({
+    type: ArticleDto,
+  })
+  @Get(':slug')
+  async getArticle(@Param('slug') slug: string): Promise<ArticleDto> {
+    return await this.articleService.getArticle(slug);
   }
 }
