@@ -116,4 +116,21 @@ export class ArticleService {
       favorited: updateArticle.favorites.some((x) => x.author.id === author.id),
     };
   }
+
+  async deleteArticle(slug: string): Promise<void> {
+    const article = await this.articleRepository.findOne({
+      where: {
+        slug: slug,
+        author: {
+          id: this.authService.getCurrentUser()!.id,
+        },
+      },
+    });
+    if (!article) {
+      throw new NotFoundException([`Article ${slug} does not exist`]);
+    }
+    await this.articleRepository.delete({
+      id: article.id,
+    });
+  }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import {
   ArticleService,
@@ -33,5 +33,12 @@ export class ArticleController {
     @Body() request: UpsertArticleDto,
   ): Promise<ArticleDto> {
     return await this.articleService.updateArticle(slug, request);
+  }
+
+  @ApiOkResponse()
+  @UseGuards(AuthGuard)
+  @Delete(':slug')
+  async deleteArticle(@Param('slug') slug: string): Promise<void> {
+    await this.articleService.deleteArticle(slug);
   }
 }
