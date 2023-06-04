@@ -7,9 +7,15 @@ import { DatabaseSchema } from '../const';
   schema: DatabaseSchema.Article,
 })
 export class Favorite extends BaseEntity {
-  @ManyToOne(() => Article, (article) => article.favorites)
+  @ManyToOne(() => Article, (article) => article.favorites, {
+    onDelete: 'CASCADE',
+    orphanedRowAction: "delete"
+  })
   article: Article;
 
-  @ManyToOne(() => User, (user) => user.favorites)
+  @ManyToOne(() => User, (user) => user.favorites, {
+    onDelete: 'CASCADE',
+    orphanedRowAction: "delete"
+  })
   author: User;
 }

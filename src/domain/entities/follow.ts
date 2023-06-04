@@ -7,9 +7,15 @@ import { User } from './';
   schema: DatabaseSchema.User,
 })
 export class Follow extends BaseEntity {
-  @ManyToOne(() => User, (user) => user.followers)
+  @ManyToOne(() => User, (user) => user.followers, {
+    onDelete: 'CASCADE',
+    orphanedRowAction: "delete"
+  })
   follower: User;
 
-  @ManyToOne(() => User, (user) => user.followings)
+  @ManyToOne(() => User, (user) => user.followings, {
+    onDelete: 'CASCADE',
+    orphanedRowAction: "delete"
+  })
   following: User;
 }

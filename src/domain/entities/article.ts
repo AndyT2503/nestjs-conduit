@@ -21,13 +21,19 @@ export class Article extends BaseEntity {
   @Column('text', { array: true })
   tags: string[];
 
-  @ManyToOne(() => User, (user) => user.articles)
+  @ManyToOne(() => User, (user) => user.articles, {
+    onDelete: 'CASCADE'
+  })
   author: User;
 
-  @OneToMany(() => Comment, (comment) => comment.article)
+  @OneToMany(() => Comment, (comment) => comment.article, {
+    cascade: true,
+  })
   comments: Comment[];
 
-  @OneToMany(() => Favorite, (favorite) => favorite.article)
+  @OneToMany(() => Favorite, (favorite) => favorite.article, {
+    cascade: true,
+  })
   favorites: Favorite[];
 
   @Column({

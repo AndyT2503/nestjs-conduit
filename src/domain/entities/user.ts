@@ -31,10 +31,14 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @OneToMany(() => Follow, (follow) => follow.follower)
+  @OneToMany(() => Follow, (follow) => follow.follower, {
+    cascade: true
+  })
   followers: Follow[];
 
-  @OneToMany(() => Follow, (follow) => follow.following)
+  @OneToMany(() => Follow, (follow) => follow.following, {
+    cascade: true
+  })
   followings: Follow[];
 
   @OneToMany(() => Article, (article) => article.author)
