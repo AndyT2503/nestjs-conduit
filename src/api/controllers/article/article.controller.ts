@@ -9,13 +9,19 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOkResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import {
   ArticleService,
   ArticleDto,
   UpsertArticleDto,
+  ArticleQueryParamsDto,
 } from 'src/application/article';
-import { PagingDto } from 'src/application/common';
+import { PagingDto, PagingQueryParamsDto } from 'src/application/common';
 import { AuthGuard } from 'src/infrastructure/auth';
 
 @ApiTags('article')
@@ -55,16 +61,16 @@ export class ArticleController {
   }
 
   @ApiQuery({
-    name: "limit",
+    name: 'limit',
     type: Number,
-    description: 'Default is 20',
-    required: false
+    description: 'Limit number of articles returned (default is 20)',
+    required: false,
   })
   @ApiQuery({
-    name: "offset",
+    name: 'offset',
     type: Number,
-    description: 'Default is 0',
-    required: false
+    description: 'Offset/skip number of articles (default is 0)',
+    required: false,
   })
   @ApiBearerAuth()
   @ApiOkResponse({
@@ -73,10 +79,50 @@ export class ArticleController {
   @UseGuards(AuthGuard)
   @Get('articles/feed')
   async getFeed(
-    @Query('limit') limit?: number,
-    @Query('offset') offset?: number,
+    @Query() query?: PagingQueryParamsDto,
   ): Promise<PagingDto<ArticleDto>> {
-    return await this.articleService.getFeed(limit || 20, offset || 0);
+    return await this.articleService.getFeed(query);
+  }
+
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    description: 'Limit number of articles returned (default is 20)',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'offset',
+    type: Number,
+    description: 'Offset/skip number of articles (default is 0)',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'author',
+    type: String,
+    description: 'Filter by author (username)',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'tag',
+    type: String,
+    description: 'Filter by tag',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'favorited',
+    type: String,
+    description: 'Filter by favorites of a user (username)',
+    required: false,
+  })
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: PagingDto<ArticleDto>,
+  })
+  @Get('articles')
+  async getGlobalArticle(
+    @Query() query?: ArticleQueryParamsDto,
+  ): Promise<PagingDto<ArticleDto>> {
+    return await this.articleService.getGlobalArticles(query);
   }
 
   @ApiOkResponse({

@@ -8,10 +8,11 @@ import {
 import { Article, User } from 'src/domain/entities';
 import { IRepository } from 'src/domain/repository/repository.interface';
 import { AuthService } from 'src/infrastructure/auth';
-import { ArticleDto, UpsertArticleDto } from './dto';
+import { ArticleDto, ArticleQueryParamsDto, UpsertArticleDto } from './dto';
 import { RepositoryInjectionToken } from 'src/domain/repository';
-import { PagingDto } from '../common';
-import { FindManyOptions, In } from 'typeorm';
+import { PagingDto, PagingQueryParamsDto } from '../common';
+import { ArrayContains, FindManyOptions, In } from 'typeorm';
+import { DEFAULT_LIMIT, DEFAULT_OFFSET } from 'src/domain/const';
 
 function generateSlug(title: string): string {
   const slug = title.toLowerCase().split(' ').join('-');
@@ -173,7 +174,7 @@ export class ArticleService {
     };
   }
 
-  async getFeed(limit: number, offset: number): Promise<PagingDto<ArticleDto>> {
+  async getFeed(query?: PagingQueryParamsDto): Promise<PagingDto<ArticleDto>> {
     const [articles, totalCount] = await this.articleRepository.findAndCount({
       where: {
         author: {
@@ -185,8 +186,55 @@ export class ArticleService {
         },
       },
       relations: ['favorites', 'favorites.author', 'author'],
-      skip: offset,
-      take: limit,
+      skip: query?.offset ?? DEFAULT_OFFSET,
+      take: query?.limit ?? DEFAULT_LIMIT,
+    });
+    return {
+      content: articles.map((article) => ({
+        author: {
+          bio: article.author.bio,
+          following: true,
+          image: article.author.image,
+          username: article.author.username,
+        },
+        slug: article.slug,
+        body: article.body,
+        createdAt: article.createdAt,
+        description: article.description,
+        favoritesCount: article.favorites.length,
+        tagList: article.tags,
+        title: article.title,
+        updatedAt: article.updatedAt,
+        favorited: article.favorites.some(
+          (x) => x.author.id === this.authService.getCurrentUser()?.id,
+        ),
+      })),
+      totalCount,
+    };
+  }
+
+  async getGlobalArticles(
+    query?: ArticleQueryParamsDto,
+  ): Promise<PagingDto<ArticleDto>> {
+    const [articles, totalCount] = await this.articleRepository.findAndCount({
+      where: {
+        ...(query?.tag && { tags: ArrayContains<string>([query.tag]) }),
+        ...(query?.author && {
+          author: {
+            username: query?.author,
+          },
+        }),
+        ...(query?.favorited && {
+          favorites: {
+            author: {
+              username: query.favorited,
+            },
+          },
+        }),
+      },
+      relations: ['favorites', 'favorites.author', 'author'],
+      skip: query?.offset ?? DEFAULT_OFFSET,
+      take: query?.limit ?? DEFAULT_LIMIT,
     });
     return {
       content: articles.map((article) => ({
