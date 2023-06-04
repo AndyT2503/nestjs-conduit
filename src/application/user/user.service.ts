@@ -91,16 +91,13 @@ export class UserService {
 
   async updateUser(request: UpdateUserDto): Promise<UserDto> {
     const userId = this.authService.getCurrentUser()!.id;
-    const user = await this.userRepository.findOne({
+    const user = (await this.userRepository.findOne({
       where: [
         {
           id: userId,
         },
       ],
-    });
-    if (!user) {
-      throw new UnauthorizedException(['Unauthorized']);
-    }
+    }))!;
     user.bio = request.bio;
     user.image = request.image;
     user.email = request.email || user.email;

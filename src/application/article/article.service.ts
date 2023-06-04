@@ -10,6 +10,7 @@ import { IRepository } from 'src/domain/repository/repository.interface';
 import { AuthService } from 'src/infrastructure/auth';
 import { ArticleDto, UpsertArticleDto } from './dto';
 import { RepositoryInjectionToken } from 'src/domain/repository';
+import { PagingDto } from '../common';
 
 function generateSlug(title: string): string {
   const slug = title.toLowerCase().split(' ').join('-');
@@ -29,15 +30,12 @@ export class ArticleService {
   ) {}
 
   async createArticle(request: UpsertArticleDto): Promise<ArticleDto> {
-    const author = await this.userRepository.findOne({
+    const author = (await this.userRepository.findOne({
       where: {
         id: this.authService.getCurrentUser()!.id,
       },
       select: ['bio', 'image', 'username'],
-    });
-    if (!author) {
-      throw new UnauthorizedException(['Unauthorized']);
-    }
+    }))!;
     const newArticle = await this.articleRepository.save({
       author: {
         id: this.authService.getCurrentUser()!.id,
@@ -71,14 +69,11 @@ export class ArticleService {
     slug: string,
     request: UpsertArticleDto,
   ): Promise<ArticleDto> {
-    const author = await this.userRepository.findOne({
+    const author = (await this.userRepository.findOne({
       where: {
         id: this.authService.getCurrentUser()!.id,
       },
-    });
-    if (!author) {
-      throw new UnauthorizedException(['Unauthorized']);
-    }
+    }))!;
     const article = await this.articleRepository.findOne({
       where: {
         slug: slug,
@@ -176,4 +171,6 @@ export class ArticleService {
       ),
     };
   }
+
+  
 }
