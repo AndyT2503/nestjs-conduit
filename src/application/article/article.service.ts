@@ -9,8 +9,12 @@ import { Article, User } from 'src/domain/entities';
 import { IRepository } from 'src/domain/repository/repository.interface';
 import { AuthService } from 'src/infrastructure/auth';
 import { ArticleDto, UpsertArticleDto } from './dto';
-import { generateSlug } from '../utils';
 import { RepositoryInjectionToken } from 'src/domain/repository';
+
+function generateSlug(title: string): string {
+  const slug = title.toLowerCase().split(' ').join('-');
+  return slug;
+}
 
 @Injectable({
   scope: Scope.REQUEST,
