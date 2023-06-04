@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from 'src/domain/const';
-import { Article, User } from 'src/domain/entities';
+import { Article, User, Comment, Favorite } from 'src/domain/entities';
 import { RepositoryInjectionToken } from 'src/domain/repository';
 import { IRepository } from 'src/domain/repository/repository.interface';
 import { AuthService } from 'src/infrastructure/auth';
@@ -251,6 +251,93 @@ export class ArticleService {
         ),
       })),
       totalCount,
+    };
+  }
+
+  async favoriteArticle(slug: string): Promise<ArticleDto> {
+    const article = await this.articleRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      relations: [
+        'favorites',
+        'favorites.author',
+        'author',
+        'author.followers.following',
+      ],
+    });
+    if (!article) {
+      throw new NotFoundException([`Article ${slug} does not exist`]);
+    }
+    await this.articleRepository.save({
+      ...article,
+      favorites: [
+        ...article.favorites,
+        {
+          author: {
+            id: this.authService.getCurrentUser()!.id,
+          },
+        },
+      ],
+    });
+    return {
+      author: {
+        bio: article.author.bio,
+        following: article.author.followers.some(
+          (x) => x.following.id === this.authService.getCurrentUser()?.id,
+        ),
+        image: article.author.image,
+        username: article.author.username,
+      },
+      slug: article.slug,
+      body: article.body,
+      createdAt: article.createdAt,
+      description: article.description,
+      favoritesCount: article.favorites.length,
+      tagList: article.tags,
+      title: article.title,
+      updatedAt: article.updatedAt,
+      favorited: true,
+    };
+  }
+
+  async unFavoriteArticle(slug: string): Promise<ArticleDto> {
+    const article = await this.articleRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      relations: [
+        'favorites',
+        'favorites.author',
+        'author',
+        'author.followers.following',
+      ],
+    });
+    if (!article) {
+      throw new NotFoundException([`Article ${slug} does not exist`]);
+    }
+    article.favorites = article.favorites.filter(
+      (x) => x.author.id !== this.authService.getCurrentUser()!.id,
+    );
+    await this.articleRepository.save(article);
+    return {
+      author: {
+        bio: article.author.bio,
+        following: article.author.followers.some(
+          (x) => x.following.id === this.authService.getCurrentUser()?.id,
+        ),
+        image: article.author.image,
+        username: article.author.username,
+      },
+      slug: article.slug,
+      body: article.body,
+      createdAt: article.createdAt,
+      description: article.description,
+      favoritesCount: article.favorites.length,
+      tagList: article.tags,
+      title: article.title,
+      updatedAt: article.updatedAt,
+      favorited: false,
     };
   }
 }

@@ -60,6 +60,26 @@ export class ArticleController {
     await this.articleService.deleteArticle(slug);
   }
 
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: ArticleDto,
+  })
+  @UseGuards(AuthGuard)
+  @Post('article/:slug/favorite')
+  async favoriteArticle(@Param('slug') slug: string): Promise<ArticleDto> {
+    return await this.articleService.favoriteArticle(slug);
+  }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    type: ArticleDto,
+  })
+  @UseGuards(AuthGuard)
+  @Delete('article/:slug/favorite')
+  async unFavoriteArticle(@Param('slug') slug: string): Promise<ArticleDto> {
+    return await this.articleService.unFavoriteArticle(slug);
+  }
+
   @ApiQuery({
     name: 'limit',
     type: Number,
