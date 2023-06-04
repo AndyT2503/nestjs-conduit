@@ -42,6 +42,12 @@ export class BaseRepository<Entity extends ObjectLiteral>
     return await this._repository.find(options);
   }
 
+  async findAndCount(
+    options?: FindManyOptions<Entity> | undefined,
+  ): Promise<[Entity[], number]> {
+    return await this._repository.findAndCount(options);
+  }
+
   async save<T extends DeepPartial<Entity>>(
     entity: T,
     options?: SaveOptions | undefined,

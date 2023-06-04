@@ -11,6 +11,7 @@ import { AuthService } from 'src/infrastructure/auth';
 import { ArticleDto, UpsertArticleDto } from './dto';
 import { RepositoryInjectionToken } from 'src/domain/repository';
 import { PagingDto } from '../common';
+import { FindManyOptions, In } from 'typeorm';
 
 function generateSlug(title: string): string {
   const slug = title.toLowerCase().split(' ').join('-');
@@ -172,5 +173,42 @@ export class ArticleService {
     };
   }
 
-  
+  async getFeed(limit: number, offset: number): Promise<PagingDto<ArticleDto>> {
+    const [articles, totalCount] = await this.articleRepository.findAndCount({
+      where: {
+        author: {
+          followers: {
+            following: {
+              id: this.authService.getCurrentUser()!.id,
+            },
+          },
+        },
+      },
+      relations: ['favorites', 'favorites.author', 'author'],
+      skip: offset,
+      take: limit,
+    });
+    return {
+      content: articles.map((article) => ({
+        author: {
+          bio: article.author.bio,
+          following: true,
+          image: article.author.image,
+          username: article.author.username,
+        },
+        slug: article.slug,
+        body: article.body,
+        createdAt: article.createdAt,
+        description: article.description,
+        favoritesCount: article.favorites.length,
+        tagList: article.tags,
+        title: article.title,
+        updatedAt: article.updatedAt,
+        favorited: article.favorites.some(
+          (x) => x.author.id === this.authService.getCurrentUser()?.id,
+        ),
+      })),
+      totalCount,
+    };
+  }
 }

@@ -11,6 +11,7 @@ import {
 export interface IRepository<Entity> {
   findOne(options: FindOneOptions<Entity>): Promise<Entity | null>;
   find(options?: FindManyOptions<Entity>): Promise<Entity[]>;
+  findAndCount(options?: FindManyOptions<Entity>): Promise<[Entity[], number]>;
   save<T extends DeepPartial<Entity>>(
     entity: T,
     options?: SaveOptions,
@@ -27,4 +28,5 @@ export interface IRepository<Entity> {
       | ObjectId[]
       | FindOptionsWhere<Entity>,
   ): Promise<DeleteResult>;
+  
 }
