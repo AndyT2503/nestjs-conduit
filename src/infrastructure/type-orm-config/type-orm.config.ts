@@ -16,4 +16,4 @@ export const typeOrmConfigOptions: TypeOrmModuleOptions & DataSourceOptions = {
   migrationsRun: true,
 };
 
-export default new DataSource(typeOrmConfigOptions as DataSourceOptions);
+export default new DataSource(typeOrmConfigOptions);

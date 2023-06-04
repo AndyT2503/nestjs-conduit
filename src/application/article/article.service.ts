@@ -1,18 +1,12 @@
-import {
-  Inject,
-  Injectable,
-  NotFoundException,
-  Scope,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { DEFAULT_LIMIT, DEFAULT_OFFSET } from 'src/domain/const';
 import { Article, User } from 'src/domain/entities';
+import { RepositoryInjectionToken } from 'src/domain/repository';
 import { IRepository } from 'src/domain/repository/repository.interface';
 import { AuthService } from 'src/infrastructure/auth';
-import { ArticleDto, ArticleQueryParamsDto, UpsertArticleDto } from './dto';
-import { RepositoryInjectionToken } from 'src/domain/repository';
+import { ArrayContains } from 'typeorm';
 import { PagingDto, PagingQueryParamsDto } from '../common';
-import { ArrayContains, FindManyOptions, In } from 'typeorm';
-import { DEFAULT_LIMIT, DEFAULT_OFFSET } from 'src/domain/const';
+import { ArticleDto, ArticleQueryParamsDto, UpsertArticleDto } from './dto';
 
 function generateSlug(title: string): string {
   const slug = title.toLowerCase().split(' ').join('-');
