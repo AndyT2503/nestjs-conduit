@@ -9,7 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import {
   ArticleService,
   ArticleDto,
@@ -54,6 +54,18 @@ export class ArticleController {
     await this.articleService.deleteArticle(slug);
   }
 
+  @ApiQuery({
+    name: "limit",
+    type: Number,
+    description: 'Default is 20',
+    required: false
+  })
+  @ApiQuery({
+    name: "offset",
+    type: Number,
+    description: 'Default is 0',
+    required: false
+  })
   @ApiBearerAuth()
   @ApiOkResponse({
     type: PagingDto<ArticleDto>,
@@ -61,10 +73,10 @@ export class ArticleController {
   @UseGuards(AuthGuard)
   @Get('articles/feed')
   async getFeed(
-    @Query('limit') limit: number = 20,
-    @Query('offset') offset: number = 0,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
   ): Promise<PagingDto<ArticleDto>> {
-    return await this.articleService.getFeed(limit, offset);
+    return await this.articleService.getFeed(limit || 20, offset || 0);
   }
 
   @ApiOkResponse({
