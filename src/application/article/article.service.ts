@@ -96,7 +96,11 @@ export class ArticleService {
       where: {
         id: article.id,
       },
-      relations: ['favorites', 'favorites.author'],
+      relations: {
+        favorites: {
+          author: true,
+        },
+      },
     }))!;
     return {
       author: {
@@ -140,12 +144,16 @@ export class ArticleService {
       where: {
         slug: slug,
       },
-      relations: [
-        'favorites',
-        'favorites.author',
-        'author',
-        'author.followers.following',
-      ],
+      relations: {
+        favorites: {
+          author: true,
+        },
+        author: {
+          followers: {
+            following: true,
+          },
+        },
+      },
     });
     if (!article) {
       throw new NotFoundException([`Article ${slug} does not exist`]);
@@ -187,7 +195,12 @@ export class ArticleService {
       order: {
         createdAt: 'DESC',
       },
-      relations: ['favorites', 'favorites.author', 'author'],
+      relations: {
+        favorites: {
+          author: true,
+        },
+        author: true,
+      },
       skip: query?.offset ?? DEFAULT_OFFSET,
       take: query?.limit ?? DEFAULT_LIMIT,
     });
@@ -237,7 +250,12 @@ export class ArticleService {
       order: {
         createdAt: 'DESC',
       },
-      relations: ['favorites', 'favorites.author', 'author'],
+      relations: {
+        favorites: {
+          author: true,
+        },
+        author: true,
+      },
       skip: query?.offset ?? DEFAULT_OFFSET,
       take: query?.limit ?? DEFAULT_LIMIT,
     });
@@ -270,12 +288,16 @@ export class ArticleService {
       where: {
         slug: slug,
       },
-      relations: [
-        'favorites',
-        'favorites.author',
-        'author',
-        'author.followers.following',
-      ],
+      relations: {
+        favorites: {
+          author: true,
+        },
+        author: {
+          followers: {
+            following: true,
+          },
+        },
+      },
     });
     if (!article) {
       throw new NotFoundException([`Article ${slug} does not exist`]);
@@ -317,12 +339,16 @@ export class ArticleService {
       where: {
         slug: slug,
       },
-      relations: [
-        'favorites',
-        'favorites.author',
-        'author',
-        'author.followers.following',
-      ],
+      relations: {
+        favorites: {
+          author: true,
+        },
+        author: {
+          followers: {
+            following: true,
+          },
+        },
+      },
     });
     if (!article) {
       throw new NotFoundException([`Article ${slug} does not exist`]);
@@ -357,11 +383,15 @@ export class ArticleService {
       where: {
         slug: slug,
       },
-      relations: [
-        'comments',
-        'comments.author',
-        'comments.author.followers.following',
-      ],
+      relations: {
+        comments: {
+          author: {
+            followers: {
+              following: true,
+            },
+          },
+        },
+      },
       select: {
         comments: true,
       },

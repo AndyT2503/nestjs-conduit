@@ -23,7 +23,11 @@ export class ProfileService {
   async getProfile(username: string): Promise<ProfileDto> {
     const user = await this.userRepository.findOne({
       where: { username: username },
-      relations: ['followers.following'],
+      relations: {
+        followers: {
+          following: true,
+        },
+      },
     });
     if (!user) {
       throw new NotFoundException(['User does not exist']);
@@ -46,7 +50,9 @@ export class ProfileService {
   async followProfile(followerUsername: string): Promise<ProfileDto> {
     const followerUser = await this.userRepository.findOne({
       where: { username: followerUsername },
-      relations: ['followers'],
+      relations: {
+        followers: true,
+      },
     });
     if (!followerUser) {
       throw new NotFoundException([`User ${followerUsername} does not exist`]);
@@ -76,7 +82,11 @@ export class ProfileService {
   async unFollowProfile(followerUsername: string): Promise<ProfileDto> {
     const followerUser = await this.userRepository.findOne({
       where: { username: followerUsername },
-      relations: ['followers', 'followers.following'],
+      relations: {
+        followers: {
+          following: true,
+        },
+      },
     });
     if (!followerUser) {
       throw new NotFoundException([`User ${followerUsername} does not exist`]);
