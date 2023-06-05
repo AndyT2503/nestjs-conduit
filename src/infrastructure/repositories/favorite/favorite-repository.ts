@@ -1,16 +1,16 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Article } from 'src/domain/entities';
+import { Favorite } from 'src/domain/entities';
 import { Repository } from 'typeorm';
 import { BaseRepository } from '../common';
 
 @Injectable({
   scope: Scope.REQUEST,
 })
-export class ArticleRepository extends BaseRepository<Article> {
+export class FavoriteRepository extends BaseRepository<Favorite> {
   constructor(
-    @InjectRepository(Article) private articleRepository: Repository<Article>,
+    @InjectRepository(Favorite) private favoriteRepository: Repository<Favorite>,
   ) {
-    super(articleRepository);
+    super(favoriteRepository);
   }
 }
