@@ -10,7 +10,8 @@ import {
   ArticleDto,
   ArticleQueryParamsDto,
   CommentDto,
-  UpsertArticleDto
+  CreateCommentDto,
+  UpsertArticleDto,
 } from './dto';
 
 function generateSlug(title: string): string {
@@ -414,5 +415,73 @@ export class ArticleService {
       id: item.id,
       updatedAt: item.createdAt,
     }));
+  }
+
+  //TODO: research alternative solution to return new comment
+  async createComment(
+    slug: string,
+    request: CreateCommentDto,
+  ): Promise<CommentDto> {
+    const article = await this.articleRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      relations: {
+        comments: {
+          author: true,
+        },
+      },
+    });
+    if (!article) {
+      throw new NotFoundException([`Article ${slug} does not exist`]);
+    }
+    const updateArticle = (await this.articleRepository.save({
+      ...article,
+      comments: [
+        ...article.comments,
+        {
+          author: {
+            id: this.authService.getCurrentUser()!.id,
+          },
+          content: request.content,
+        },
+      ],
+    })) as Article;
+    const author = (await this.userRepository.findOne({
+      where: {
+        id: this.authService.getCurrentUser()!.id,
+      },
+    }))!;
+    const newComment = updateArticle.comments[0];
+    return {
+      author: {
+        bio: author.bio,
+        following: false,
+        image: author.image,
+        username: author.username,
+      },
+      content: newComment.content,
+      createdAt: newComment.updatedAt,
+      updatedAt: newComment.updatedAt,
+      id: newComment.id,
+    };
+  }
+
+  async deleteComment(slug: string, commentId: string): Promise<void> {
+    const article = await this.articleRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      relations: {
+        comments: true,
+      },
+    });
+    if (!article) {
+      throw new NotFoundException([`Article ${slug} does not exist`]);
+    }
+    article.comments = article.comments.filter(
+      (x) => x.id !== commentId,
+    );
+    await this.articleRepository.save(article);
   }
 }

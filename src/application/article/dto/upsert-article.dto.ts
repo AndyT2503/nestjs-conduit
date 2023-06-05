@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty } from "class-validator";
+import { IsNotEmpty } from "class-validator";
 
 export class UpsertArticleDto {
   @ApiProperty() @IsNotEmpty() readonly title: string;

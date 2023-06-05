@@ -20,6 +20,7 @@ import {
   ArticleQueryParamsDto,
   ArticleService,
   CommentDto,
+  CreateCommentDto,
   UpsertArticleDto,
 } from 'src/application/article';
 import { PagingDto, PagingQueryParamsDto } from 'src/application/common';
@@ -157,8 +158,27 @@ export class ArticleController {
   @ApiOkResponse({
     type: CommentDto,
   })
-  @Get('article/:slug/comment')
+  @Get('article/:slug/comments')
   async getArticleComments(@Param('slug') slug: string): Promise<CommentDto[]> {
     return await this.articleService.getComments(slug);
+  }
+
+  @ApiOkResponse({
+    type: CommentDto,
+  })
+  @Post('article/:slug/comment')
+  async createArticleComment(
+    @Param('slug') slug: string,
+    @Body() request: CreateCommentDto,
+  ): Promise<CommentDto> {
+    return await this.articleService.createComment(slug, request);
+  }
+
+  @Post('article/:slug/comment/:id')
+  async deleteArticleComment(
+    @Param('slug') slug: string,
+    @Param('id') id: string,
+  ): Promise<void> {
+    await this.articleService.deleteComment(slug, id);
   }
 }
