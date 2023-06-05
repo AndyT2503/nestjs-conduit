@@ -1,6 +1,6 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from 'src/domain/const';
-import { Article, User } from 'src/domain/entities';
+import { Article, Comment, User } from 'src/domain/entities';
 import { RepositoryInjectionToken } from 'src/domain/repository';
 import { IRepository } from 'src/domain/repository/repository.interface';
 import { AuthInjectionToken, IAuthService } from 'src/infrastructure/auth';
@@ -28,6 +28,8 @@ export class ArticleService {
     private userRepository: IRepository<User>,
     @Inject(RepositoryInjectionToken.Article)
     private articleRepository: IRepository<Article>,
+    @Inject(RepositoryInjectionToken.Comment)
+    private commentRepository: IRepository<Comment>,
     @Inject(AuthInjectionToken)
     private authService: IAuthService,
   ) {}
@@ -140,7 +142,6 @@ export class ArticleService {
     });
   }
 
-  //TODO: improve query performance
   async getArticle(slug: string): Promise<ArticleDto> {
     const article = await this.articleRepository.findOne({
       where: {
@@ -380,44 +381,56 @@ export class ArticleService {
     };
   }
 
-  async getComments(slug: string): Promise<CommentDto[]> {
+  async getComments(
+    slug: string,
+    query?: PagingQueryParamsDto,
+  ): Promise<PagingDto<CommentDto>> {
     const article = await this.articleRepository.findOne({
       where: {
         slug: slug,
-      },
-      relations: {
-        comments: {
-          author: {
-            followers: {
-              following: true,
-            },
-          },
-        },
-      },
-      select: {
-        comments: true,
       },
     });
     if (!article) {
       throw new NotFoundException([`Article ${slug} does not exist`]);
     }
-    return article.comments.map((item) => ({
-      author: {
-        bio: item.author.bio,
-        following: item.author.followers.some(
-          (x) => x.following.id === this.authService.getCurrentUser()!.id,
-        ),
-        image: item.author.image,
-        username: item.author.username,
+    const [comments, totalCount] = await this.commentRepository.findAndCount({
+      where: {
+        article: {
+          id: article.id,
+        },
       },
-      content: item.content,
-      createdAt: item.createdAt,
-      id: item.id,
-      updatedAt: item.createdAt,
-    }));
+      relations: {
+        author: {
+          followers: {
+            following: true,
+          },
+        },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      skip: query?.offset ?? DEFAULT_OFFSET,
+      take: query?.limit ?? DEFAULT_LIMIT,
+    });
+    return {
+      totalCount,
+      content: comments.map((item) => ({
+        author: {
+          bio: item.author.bio,
+          following: item.author.followers.some(
+            (x) => x.following.id === this.authService.getCurrentUser()!.id,
+          ),
+          image: item.author.image,
+          username: item.author.username,
+        },
+        content: item.content,
+        createdAt: item.createdAt,
+        id: item.id,
+        updatedAt: item.createdAt,
+      })),
+    };
   }
 
-  //TODO: research alternative solution to return new comment
   async createComment(
     slug: string,
     request: CreateCommentDto,
@@ -426,33 +439,24 @@ export class ArticleService {
       where: {
         slug: slug,
       },
-      relations: {
-        comments: {
-          author: true,
-        },
-      },
     });
     if (!article) {
       throw new NotFoundException([`Article ${slug} does not exist`]);
     }
-    const updateArticle = (await this.articleRepository.save({
-      ...article,
-      comments: [
-        ...article.comments,
-        {
-          author: {
-            id: this.authService.getCurrentUser()!.id,
-          },
-          content: request.content,
-        },
-      ],
-    })) as Article;
     const author = (await this.userRepository.findOne({
       where: {
         id: this.authService.getCurrentUser()!.id,
       },
     }))!;
-    const newComment = updateArticle.comments[0];
+    const newComment = await this.commentRepository.save({
+      author: {
+        id: author.id,
+      },
+      content: request.content,
+      article: {
+        id: article.id,
+      },
+    });
     return {
       author: {
         bio: author.bio,
@@ -468,20 +472,19 @@ export class ArticleService {
   }
 
   async deleteComment(slug: string, commentId: string): Promise<void> {
-    const article = await this.articleRepository.findOne({
+    const comment = await this.commentRepository.findOne({
       where: {
-        slug: slug,
-      },
-      relations: {
-        comments: true,
+        id: commentId,
+        article: {
+          slug: slug,
+        },
       },
     });
-    if (!article) {
-      throw new NotFoundException([`Article ${slug} does not exist`]);
+    if (!comment) {
+      throw new NotFoundException(['This comment does not exist']);
     }
-    article.comments = article.comments.filter(
-      (x) => x.id !== commentId,
-    );
-    await this.articleRepository.save(article);
+    await this.commentRepository.delete({
+      id: comment.id,
+    });
   }
 }

@@ -1,12 +1,18 @@
 import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   LoginUserDto,
   RegisterUserDto,
   UpdateUserDto, UserDto, UserService
 } from 'src/application/user';
 import { AuthGuard } from 'src/infrastructure/auth';
+import { ExceptionModel } from 'src/infrastructure/exceptions';
 
+@ApiResponse({
+  status: 422,
+  description: 'Unexpected Error',
+  type: ExceptionModel,
+})
 @ApiTags('user')
 @Controller({
   path: 'user',

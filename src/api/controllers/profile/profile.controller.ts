@@ -6,10 +6,16 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProfileDto, ProfileService } from 'src/application/profile';
 import { AuthGuard } from 'src/infrastructure/auth';
+import { ExceptionModel } from 'src/infrastructure/exceptions';
 
+@ApiResponse({
+  status: 422,
+  description: 'Unexpected Error',
+  type: ExceptionModel,
+})
 @ApiTags('profile')
 @Controller({
   path: 'profile',

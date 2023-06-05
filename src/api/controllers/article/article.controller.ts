@@ -13,6 +13,7 @@ import {
   ApiBearerAuth,
   ApiOkResponse,
   ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import {
@@ -25,9 +26,17 @@ import {
 } from 'src/application/article';
 import { PagingDto, PagingQueryParamsDto } from 'src/application/common';
 import { AuthGuard } from 'src/infrastructure/auth';
+import { ExceptionModel } from 'src/infrastructure/exceptions';
 
+@ApiResponse({
+  status: 422,
+  description: 'Unexpected Error',
+  type: ExceptionModel,
+})
 @ApiTags('article')
-@Controller()
+@Controller({
+  path: 'article',
+})
 export class ArticleController {
   constructor(private articleService: ArticleService) {}
 
@@ -36,7 +45,7 @@ export class ArticleController {
     type: ArticleDto,
   })
   @UseGuards(AuthGuard)
-  @Post('article')
+  @Post()
   async createArticle(@Body() request: UpsertArticleDto): Promise<ArticleDto> {
     return await this.articleService.createArticle(request);
   }
@@ -46,7 +55,7 @@ export class ArticleController {
     type: ArticleDto,
   })
   @UseGuards(AuthGuard)
-  @Put('article/:slug')
+  @Put(':slug')
   async updateArticle(
     @Param('slug') slug: string,
     @Body() request: UpsertArticleDto,
@@ -57,7 +66,7 @@ export class ArticleController {
   @ApiBearerAuth()
   @ApiOkResponse()
   @UseGuards(AuthGuard)
-  @Delete('article/:slug')
+  @Delete(':slug')
   async deleteArticle(@Param('slug') slug: string): Promise<void> {
     await this.articleService.deleteArticle(slug);
   }
@@ -67,7 +76,7 @@ export class ArticleController {
     type: ArticleDto,
   })
   @UseGuards(AuthGuard)
-  @Post('article/:slug/favorite')
+  @Post(':slug/favorite')
   async favoriteArticle(@Param('slug') slug: string): Promise<ArticleDto> {
     return await this.articleService.favoriteArticle(slug);
   }
@@ -77,7 +86,7 @@ export class ArticleController {
     type: ArticleDto,
   })
   @UseGuards(AuthGuard)
-  @Delete('article/:slug/favorite')
+  @Delete(':slug/favorite')
   async unFavoriteArticle(@Param('slug') slug: string): Promise<ArticleDto> {
     return await this.articleService.unFavoriteArticle(slug);
   }
@@ -99,7 +108,7 @@ export class ArticleController {
     type: PagingDto<ArticleDto>,
   })
   @UseGuards(AuthGuard)
-  @Get('articles/feed')
+  @Get('feed')
   async getFeed(
     @Query() query?: PagingQueryParamsDto,
   ): Promise<PagingDto<ArticleDto>> {
@@ -136,11 +145,10 @@ export class ArticleController {
     description: 'Filter by favorites of a user (username)',
     required: false,
   })
-  @ApiBearerAuth()
   @ApiOkResponse({
     type: PagingDto<ArticleDto>,
   })
-  @Get('articles')
+  @Get('global')
   async getGlobalArticle(
     @Query() query?: ArticleQueryParamsDto,
   ): Promise<PagingDto<ArticleDto>> {
@@ -150,23 +158,40 @@ export class ArticleController {
   @ApiOkResponse({
     type: ArticleDto,
   })
-  @Get('article/:slug')
+  @Get(':slug')
   async getArticle(@Param('slug') slug: string): Promise<ArticleDto> {
     return await this.articleService.getArticle(slug);
   }
 
-  @ApiOkResponse({
-    type: CommentDto,
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    description: 'Limit number of comments returned (default is 20)',
+    required: false,
   })
-  @Get('article/:slug/comments')
-  async getArticleComments(@Param('slug') slug: string): Promise<CommentDto[]> {
-    return await this.articleService.getComments(slug);
+  @ApiQuery({
+    name: 'offset',
+    type: Number,
+    description: 'Offset/skip number of comments (default is 0)',
+    required: false,
+  })
+  @ApiOkResponse({
+    type: PagingDto<CommentDto>,
+  })
+  @Get(':slug/comment')
+  async getArticleComments(
+    @Param('slug') slug: string,
+    @Query() query?: PagingQueryParamsDto,
+  ): Promise<PagingDto<CommentDto>> {
+    return await this.articleService.getComments(slug, query);
   }
 
   @ApiOkResponse({
     type: CommentDto,
   })
-  @Post('article/:slug/comment')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post(':slug/comment')
   async createArticleComment(
     @Param('slug') slug: string,
     @Body() request: CreateCommentDto,
@@ -174,7 +199,9 @@ export class ArticleController {
     return await this.articleService.createComment(slug, request);
   }
 
-  @Post('article/:slug/comment/:id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Delete(':slug/comment/:id')
   async deleteArticleComment(
     @Param('slug') slug: string,
     @Param('id') id: string,
