@@ -1,16 +1,16 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { DEFAULT_LIMIT, DEFAULT_OFFSET } from 'src/domain/const';
-import { Article, User, Comment, Favorite } from 'src/domain/entities';
+import { Article, User } from 'src/domain/entities';
 import { RepositoryInjectionToken } from 'src/domain/repository';
 import { IRepository } from 'src/domain/repository/repository.interface';
-import { AuthService } from 'src/infrastructure/auth';
+import { AuthInjectionToken, IAuthService } from 'src/infrastructure/auth';
 import { ArrayContains } from 'typeorm';
 import { PagingDto, PagingQueryParamsDto } from '../common';
 import {
   ArticleDto,
   ArticleQueryParamsDto,
   CommentDto,
-  UpsertArticleDto,
+  UpsertArticleDto
 } from './dto';
 
 function generateSlug(title: string): string {
@@ -27,7 +27,8 @@ export class ArticleService {
     private userRepository: IRepository<User>,
     @Inject(RepositoryInjectionToken.Article)
     private articleRepository: IRepository<Article>,
-    private authService: AuthService,
+    @Inject(AuthInjectionToken)
+    private authService: IAuthService,
   ) {}
 
   async createArticle(request: UpsertArticleDto): Promise<ArticleDto> {

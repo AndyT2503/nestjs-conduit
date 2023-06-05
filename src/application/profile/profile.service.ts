@@ -3,11 +3,11 @@ import {
   Inject,
   Injectable,
   NotFoundException,
-  Scope,
+  Scope
 } from '@nestjs/common';
 import { User } from 'src/domain/entities';
 import { IRepository, RepositoryInjectionToken } from 'src/domain/repository';
-import { AuthService } from 'src/infrastructure/auth';
+import { AuthInjectionToken, IAuthService } from 'src/infrastructure/auth';
 import { ProfileDto } from './dto';
 
 @Injectable({
@@ -17,7 +17,8 @@ export class ProfileService {
   constructor(
     @Inject(RepositoryInjectionToken.User)
     private userRepository: IRepository<User>,
-    private authService: AuthService,
+    @Inject(AuthInjectionToken)
+    private authService: IAuthService,
   ) {}
 
   async getProfile(username: string): Promise<ProfileDto> {

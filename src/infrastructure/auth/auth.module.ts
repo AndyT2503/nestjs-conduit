@@ -2,6 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { EnvironmentConfiguration } from 'src/infrastructure/environment-config';
+import { AuthInjectionToken } from './auth.injection-token';
 import { AuthService } from './auth.service';
 
 @Global()
@@ -16,7 +17,12 @@ import { AuthService } from './auth.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService],
-  exports: [AuthService],
+  providers: [
+    {
+      provide: AuthInjectionToken,
+      useClass: AuthService
+    }
+  ],
+  exports: [AuthInjectionToken],
 })
 export class AuthModule {}

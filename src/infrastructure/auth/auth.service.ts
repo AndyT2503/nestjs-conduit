@@ -6,11 +6,12 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/domain/entities';
 import { EnvironmentConfiguration } from '../environment-config';
 import { TokenPayloadDto } from 'src/application/user';
+import { IAuthService } from './auth.service.interface';
 
 @Injectable({
   scope: Scope.REQUEST,
 })
-export class AuthService {
+export class AuthService implements IAuthService {
   private readonly logger = new Logger(AuthService.name);
   private currentUser: Pick<User, 'id' | 'username' | 'email'> | null;
   private currentToken: string | null;

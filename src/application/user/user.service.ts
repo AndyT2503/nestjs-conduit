@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { User } from 'src/domain/entities';
 import { IRepository, RepositoryInjectionToken } from 'src/domain/repository';
-import { AuthService } from 'src/infrastructure/auth';
+import { AuthInjectionToken, IAuthService } from 'src/infrastructure/auth';
 import { LoginUserDto, RegisterUserDto, UpdateUserDto, UserDto } from './dto';
 
 @Injectable({
@@ -15,8 +15,10 @@ import { LoginUserDto, RegisterUserDto, UpdateUserDto, UserDto } from './dto';
 })
 export class UserService {
   constructor(
-    @Inject(RepositoryInjectionToken.User) private userRepository: IRepository<User>,
-    private authService: AuthService,
+    @Inject(RepositoryInjectionToken.User)
+    private userRepository: IRepository<User>,
+    @Inject(AuthInjectionToken)
+    private authService: IAuthService,
   ) {}
 
   async registerUser(request: RegisterUserDto): Promise<UserDto> {

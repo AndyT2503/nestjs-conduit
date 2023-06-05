@@ -1,11 +1,15 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import { NextFunction, Request, Response } from 'express';
 import { extractTokenFromRequest } from '../utils';
-import { AuthService } from './auth.service';
+import { AuthInjectionToken } from './auth.injection-token';
+import { IAuthService } from './auth.service.interface';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private authService: AuthService) {}
+  constructor(
+    @Inject(AuthInjectionToken)
+    private authService: IAuthService,
+  ) {}
   use(req: Request, res: Response, next: NextFunction) {
     const token = extractTokenFromRequest(req);
     this.authService.getCurrentUserInfo(token);
