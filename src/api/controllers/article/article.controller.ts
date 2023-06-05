@@ -19,6 +19,7 @@ import {
   ArticleDto,
   ArticleQueryParamsDto,
   ArticleService,
+  CommentDto,
   UpsertArticleDto,
 } from 'src/application/article';
 import { PagingDto, PagingQueryParamsDto } from 'src/application/common';
@@ -151,5 +152,13 @@ export class ArticleController {
   @Get('article/:slug')
   async getArticle(@Param('slug') slug: string): Promise<ArticleDto> {
     return await this.articleService.getArticle(slug);
+  }
+
+  @ApiOkResponse({
+    type: CommentDto,
+  })
+  @Get('article/:slug/comment')
+  async getArticleComments(@Param('slug') slug: string): Promise<CommentDto[]> {
+    return await this.articleService.getComments(slug);
   }
 }

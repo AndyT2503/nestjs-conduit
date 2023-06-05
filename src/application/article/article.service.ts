@@ -6,7 +6,12 @@ import { IRepository } from 'src/domain/repository/repository.interface';
 import { AuthService } from 'src/infrastructure/auth';
 import { ArrayContains } from 'typeorm';
 import { PagingDto, PagingQueryParamsDto } from '../common';
-import { ArticleDto, ArticleQueryParamsDto, UpsertArticleDto } from './dto';
+import {
+  ArticleDto,
+  ArticleQueryParamsDto,
+  CommentDto,
+  UpsertArticleDto,
+} from './dto';
 
 function generateSlug(title: string): string {
   const slug = title.toLowerCase().split(' ').join('-');
@@ -179,6 +184,9 @@ export class ArticleService {
           },
         },
       },
+      order: {
+        createdAt: 'DESC',
+      },
       relations: ['favorites', 'favorites.author', 'author'],
       skip: query?.offset ?? DEFAULT_OFFSET,
       take: query?.limit ?? DEFAULT_LIMIT,
@@ -225,6 +233,9 @@ export class ArticleService {
             },
           },
         }),
+      },
+      order: {
+        createdAt: 'DESC',
       },
       relations: ['favorites', 'favorites.author', 'author'],
       skip: query?.offset ?? DEFAULT_OFFSET,
@@ -339,5 +350,38 @@ export class ArticleService {
       updatedAt: article.updatedAt,
       favorited: false,
     };
+  }
+
+  async getComments(slug: string): Promise<CommentDto[]> {
+    const article = await this.articleRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      relations: [
+        'comments',
+        'comments.author',
+        'comments.author.followers.following',
+      ],
+      select: {
+        comments: true,
+      },
+    });
+    if (!article) {
+      throw new NotFoundException([`Article ${slug} does not exist`]);
+    }
+    return article.comments.map((item) => ({
+      author: {
+        bio: item.author.bio,
+        following: item.author.followers.some(
+          (x) => x.following.id === this.authService.getCurrentUser()!.id,
+        ),
+        image: item.author.image,
+        username: item.author.username,
+      },
+      content: item.content,
+      createdAt: item.createdAt,
+      id: item.id,
+      updatedAt: item.createdAt,
+    }));
   }
 }
