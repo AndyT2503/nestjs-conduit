@@ -4,15 +4,17 @@ import { Article, Comment, User } from 'src/domain/entities';
 import { RepositoryInjectionToken } from 'src/domain/repository';
 import { IRepository } from 'src/domain/repository/repository.interface';
 import { AuthInjectionToken, IAuthService } from 'src/infrastructure/auth';
-import { ArrayContains } from 'typeorm';
+import { Any, ArrayContains, Raw } from 'typeorm';
 import { PagingDto, PagingQueryParamsDto } from '../common';
 import {
   ArticleDto,
   ArticleQueryParamsDto,
   CommentDto,
   CreateCommentDto,
+  NewestTagsDto,
   UpsertArticleDto,
 } from './dto';
+import { take } from 'rxjs';
 
 function generateSlug(title: string): string {
   const slug = title.toLowerCase().split(' ').join('-');
@@ -486,5 +488,25 @@ export class ArticleService {
     await this.commentRepository.delete({
       id: comment.id,
     });
+  }
+
+  async getNewestTags(): Promise<NewestTagsDto> {
+    const newestArticles = await this.articleRepository.find({
+      where: {
+        tags: Raw((alias) => `array_length(${alias}, 1) > 0`),
+      },
+      select: {
+        tags: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 10,
+    });
+    const newestTags = newestArticles.flatMap((x) => x.tags);
+    const distinctTags = [...new Set(newestTags)];
+    return {
+      tags: distinctTags.slice(0, 10),
+    };
   }
 }
