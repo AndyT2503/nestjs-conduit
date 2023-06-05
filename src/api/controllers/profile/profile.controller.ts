@@ -9,12 +9,12 @@ import {
 import { ApiBearerAuth, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProfileDto, ProfileService } from 'src/application/profile';
 import { AuthGuard } from 'src/infrastructure/auth';
-import { ExceptionModel } from 'src/infrastructure/exceptions';
+import { ExceptionDto } from 'src/infrastructure/exceptions';
 
 @ApiResponse({
   status: 422,
   description: 'Unexpected Error',
-  type: ExceptionModel,
+  type: ExceptionDto,
 })
 @ApiTags('profile')
 @Controller({

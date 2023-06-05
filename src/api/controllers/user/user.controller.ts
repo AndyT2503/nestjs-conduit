@@ -6,12 +6,12 @@ import {
   UpdateUserDto, UserDto, UserService
 } from 'src/application/user';
 import { AuthGuard } from 'src/infrastructure/auth';
-import { ExceptionModel } from 'src/infrastructure/exceptions';
+import { ExceptionDto } from 'src/infrastructure/exceptions';
 
 @ApiResponse({
   status: 422,
   description: 'Unexpected Error',
-  type: ExceptionModel,
+  type: ExceptionDto,
 })
 @ApiTags('user')
 @Controller({

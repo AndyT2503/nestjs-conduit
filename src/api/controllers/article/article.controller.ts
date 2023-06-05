@@ -26,12 +26,12 @@ import {
 } from 'src/application/article';
 import { PagingDto, PagingQueryParamsDto } from 'src/application/common';
 import { AuthGuard } from 'src/infrastructure/auth';
-import { ExceptionModel } from 'src/infrastructure/exceptions';
+import { ExceptionDto } from 'src/infrastructure/exceptions';
 
 @ApiResponse({
   status: 422,
   description: 'Unexpected Error',
-  type: ExceptionModel,
+  type: ExceptionDto,
 })
 @ApiTags('article')
 @Controller({
