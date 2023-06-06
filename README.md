@@ -9,7 +9,7 @@ The onion architecture, introduced by Jeffrey Palermo in 2008. The main idea of 
 4. Install all dependencies via `npm install`
 5. Start project in **development watch mode** via `npm run start:dev`
 
-## Project Structure:
+## Project Structure
 ![Onion Architecture](https://www.codewithmukesh.com/wp-content/uploads/2020/06/Onion-Architecture-In-ASP.NET-Core.png)
 
 **Domain:**
@@ -21,9 +21,9 @@ The onion architecture, introduced by Jeffrey Palermo in 2008. The main idea of 
 
 **Application:**
 - Application layer will do the following tasks:
-  1. Validate User Input.
-  2. Handle business logic.
-  3. Return data transfer objects (DTO) as a result of business logic.
+  <p>1. Validate User Input.</p>
+  <p>2. Handle business logic.</p>
+  <p>3. Return data transfer objects (DTO) as a result of business logic.</p>
 
 **API:**
 - Contains **controllers** of this apllication.
