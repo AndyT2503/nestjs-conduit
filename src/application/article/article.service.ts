@@ -259,7 +259,11 @@ export class ArticleService {
         favorites: {
           author: true,
         },
-        author: true,
+        author: {
+          followers: {
+            following: true,
+          },
+        },
       },
       skip: query?.offset ?? DEFAULT_OFFSET,
       take: query?.limit ?? DEFAULT_LIMIT,
@@ -268,7 +272,9 @@ export class ArticleService {
       content: articles.map((article) => ({
         author: {
           bio: article.author.bio,
-          following: true,
+          following: article.author.followers.some(
+            (x) => x.following.id === this.authService.getCurrentUser()?.id,
+          ),
           image: article.author.image,
           username: article.author.username,
         },
